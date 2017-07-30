@@ -23,7 +23,8 @@ func main() {
 }
 
 
-type getDataFromContestsElemFunc func(*goquery.Selection, []map[string]string) []map[string]string
+type arrayContestsData []map[string]string
+type getDataFromContestsElemFunc func(*goquery.Selection, arrayContestsData) arrayContestsData
 
 func getContestsFromPage(page_name string, page_url string, contests_element_path string, getDataFromContestsElem getDataFromContestsElemFunc) string {
 	log.Println("Scraping", page_name)
@@ -38,17 +39,17 @@ func getContestsFromPage(page_name string, page_url string, contests_element_pat
 	contests_elem := doc.Find(contests_element_path)
 	number_contests := contests_elem.Length()
 
-	contests := make([]map[string]string, number_contests)
+	contests := make(arrayContestsData, number_contests)
 
 	contests = getDataFromContestsElem(contests_elem, contests)
 
-	contests_map := make(map[string][]map[string]string)
+	contests_map := make(map[string]arrayContestsData)
 	contests_map[page_name] = contests
 
 	return convertToJson(contests_map)
 }
 
-func getContestsArtefactos(contests_elem *goquery.Selection, contests []map[string]string) []map[string]string {
+func getContestsArtefactos(contests_elem *goquery.Selection, contests arrayContestsData) arrayContestsData {
 	contests_elem.Each(func(i int, s *goquery.Selection) {
 		contest_map := make(map[string]string)
 		contest_map["name"] = s.Find("h4").Text()
@@ -58,7 +59,7 @@ func getContestsArtefactos(contests_elem *goquery.Selection, contests []map[stri
 	return contests
 }
 
-func getContestsTransporteslisboa(contests_elem *goquery.Selection, contests []map[string]string) []map[string]string {
+func getContestsTransporteslisboa(contests_elem *goquery.Selection, contests arrayContestsData) arrayContestsData {
 	contests_elem.Each(func(i int, s *goquery.Selection) {
 		contest_map := make(map[string]string)
 		contest_map["name"] = s.Text()
@@ -69,7 +70,7 @@ func getContestsTransporteslisboa(contests_elem *goquery.Selection, contests []m
 }
 
 
-func convertToJson(to_convert map[string][]map[string]string) string {
+func convertToJson(to_convert map[string]arrayContestsData) string {
 	bytes, err := json.Marshal(to_convert)
 	if err != nil {
 		log.Fatal(err)
