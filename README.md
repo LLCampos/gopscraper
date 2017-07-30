@@ -1,2 +1,2 @@
 # gopscraper
-Back-end of a contests (of the type you can win tickets for movies or concerts) aggregator.
+Rewrite of [pcrawler](https://github.com/LLCampos/pcrawler) to improve speed and learn Golang.
