@@ -21,7 +21,9 @@ func main() {
 		getContestsTransporteslisboa,
 	)
 
-	all_contests := mergeMaps(artefactos_contests, transporteslisboa_contests)
+	contests_list := []contestsData{artefactos_contests, transporteslisboa_contests}
+
+	all_contests := mergeMaps(contests_list)
 	println(convertToJson(all_contests))
 }
 
@@ -81,9 +83,15 @@ func convertToJson(to_convert contestsData) string {
 	return string(bytes)
 }
 
-func mergeMaps(map1 contestsData, map2 contestsData) contestsData {
-	for k, v := range map1 {
-		map2[k] = v
+// Merges all contestsData maps in contestsData into one contestsData map
+func mergeMaps(contests_list []contestsData) contestsData {
+	final_map := make(contestsData)
+
+	for _, contests_data := range contests_list {
+		for k, v := range contests_data {
+			final_map[k] = v
+		}
 	}
-	return map2
+
+	return final_map
 }
