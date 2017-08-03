@@ -6,22 +6,39 @@ import (
 	"encoding/json"
 )
 
+
 func main() {
-	artefactos_contests := getContestsFromPage(
+	ch := make(chan contestsData)
+
+	go getContestsFromPage(
 		"artefactos",
 		"http://www.arte-factos.net/passatempos-af/",
 		"div.titulo-pagina > a",
 		getContestsArtefactos,
+		ch,
 	)
 
-	transporteslisboa_contests := getContestsFromPage(
+	go getContestsFromPage(
 		"transporteslisboa",
 		"http://passatempos.transporteslisboa.pt/",
 		"h1.entry-title > a",
 		getContestsTransporteslisboa,
+		ch,
 	)
 
-	contests_list := []contestsData{artefactos_contests, transporteslisboa_contests}
+	go getContestsFromPage(
+		"antena3",
+		"http://media.rtp.pt/antena3/passatempos/",
+		"h3.entry-title > a",
+		getContestsAntena3,
+		ch,
+	)
+
+	var contests_list []contestsData
+	for i := 0; i<3; i++  {
+		page_contests := <- ch
+		contests_list = append(contests_list, page_contests)
+	}
 
 	all_contests := mergeMaps(contests_list)
 	println(convertToJson(all_contests))
@@ -31,7 +48,7 @@ type pageContestsData []map[string]string
 type contestsData map[string]pageContestsData
 type getDataFromContestsElemFunc func(*goquery.Selection, pageContestsData) pageContestsData
 
-func getContestsFromPage(page_name string, page_url string, contests_element_path string, getDataFromContestsElem getDataFromContestsElemFunc) contestsData {
+func getContestsFromPage(page_name string, page_url string, contests_element_path string, getDataFromContestsElem getDataFromContestsElemFunc, ch chan contestsData) {
 	log.Println("Scraping", page_name)
 
 	doc, err := goquery.NewDocument(page_url)
@@ -51,7 +68,7 @@ func getContestsFromPage(page_name string, page_url string, contests_element_pat
 	page_contests := make(contestsData)
 	page_contests[page_name] = contests
 
-	return page_contests
+	ch <- page_contests
 }
 
 func getContestsArtefactos(contests_elem *goquery.Selection, contests pageContestsData) pageContestsData {
@@ -73,6 +90,11 @@ func getContestsTransporteslisboa(contests_elem *goquery.Selection, contests pag
 	})
 	return contests
 }
+
+func getContestsAntena3(contests_elem *goquery.Selection, contests pageContestsData) pageContestsData {
+	return getContestsTransporteslisboa(contests_elem, contests)
+}
+
 
 
 func convertToJson(to_convert contestsData) string {
