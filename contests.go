@@ -10,7 +10,16 @@ import (
 func GetContests() string{
 	ch := make(chan contestsData)
 
-	number_pages_supported := 3
+	number_pages_supported := 4
+
+
+	go getContestsFromPage(
+		"activa sapo",
+		"http://activa.sapo.pt/passatempos/",
+		"div.textDetails > h1.title > a",
+		getContestsActivaSapo,
+		ch,
+	)
 
 	go getContestsFromPage(
 		"artefactos",
@@ -21,18 +30,18 @@ func GetContests() string{
 	)
 
 	go getContestsFromPage(
-		"transporteslisboa",
-		"http://passatempos.transporteslisboa.pt/",
-		"h1.entry-title > a",
-		getContestsTransporteslisboa,
-		ch,
-	)
-
-	go getContestsFromPage(
 		"antena3",
 		"http://media.rtp.pt/antena3/passatempos/",
 		"h3.entry-title > a",
 		getContestsAntena3,
+		ch,
+	)
+
+	go getContestsFromPage(
+		"transporteslisboa",
+		"http://passatempos.transporteslisboa.pt/",
+		"h1.entry-title > a",
+		getContestsTransporteslisboa,
 		ch,
 	)
 
@@ -72,6 +81,16 @@ func getContestsFromPage(page_name string, page_url string, contests_element_pat
 	page_contests[page_name] = contests
 
 	ch <- page_contests
+}
+
+func getContestsActivaSapo(contests_elem *goquery.Selection, contests pageContestsData) pageContestsData {
+	contests_elem.Each(func(i int, s *goquery.Selection) {
+		contest_map := make(map[string]string)
+		contest_map["name"] = s.Text()
+		contest_map["url"], _ = s.Attr("href")
+		contests[i] = contest_map
+	})
+	return contests
 }
 
 func getContestsArtefactos(contests_elem *goquery.Selection, contests pageContestsData) pageContestsData {
