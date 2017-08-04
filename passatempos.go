@@ -10,6 +10,8 @@ import (
 func main() {
 	ch := make(chan contestsData)
 
+	number_pages_supported := 3
+
 	go getContestsFromPage(
 		"artefactos",
 		"http://www.arte-factos.net/passatempos-af/",
@@ -35,7 +37,7 @@ func main() {
 	)
 
 	var contests_list []contestsData
-	for i := 0; i<3; i++  {
+	for i := 0; i<number_pages_supported; i++  {
 		page_contests := <- ch
 		contests_list = append(contests_list, page_contests)
 	}
