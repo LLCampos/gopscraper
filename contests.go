@@ -1,4 +1,4 @@
-package main
+package gopscraper
 
 import (
 	"github.com/PuerkitoBio/goquery"
@@ -7,7 +7,7 @@ import (
 )
 
 
-func main() {
+func GetContests() string{
 	ch := make(chan contestsData)
 
 	number_pages_supported := 3
@@ -43,7 +43,7 @@ func main() {
 	}
 
 	all_contests := mergeMaps(contests_list)
-	println(convertToJson(all_contests))
+	return convertToJson(all_contests)
 }
 
 type pageContestsData []map[string]string
