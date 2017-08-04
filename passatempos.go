@@ -49,21 +49,22 @@ type contestsData map[string]pageContestsData
 type getDataFromContestsElemFunc func(*goquery.Selection, pageContestsData) pageContestsData
 
 func getContestsFromPage(page_name string, page_url string, contests_element_path string, getDataFromContestsElem getDataFromContestsElemFunc, ch chan contestsData) {
-	log.Println("Scraping", page_name)
-
+	log.Println("Downloading", page_url)
 	doc, err := goquery.NewDocument(page_url)
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		log.Println("Website successfully obtained")
+		log.Println("Website successfully obtained:", page_url)
 	}
 
+	log.Println("Scraping ", page_url)
 	contests_elem := doc.Find(contests_element_path)
 	number_contests := contests_elem.Length()
 
 	contests := make(pageContestsData, number_contests)
 
 	contests = getDataFromContestsElem(contests_elem, contests)
+	log.Println("Finished Scraping ", page_url)
 
 	page_contests := make(contestsData)
 	page_contests[page_name] = contests
