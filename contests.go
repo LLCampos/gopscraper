@@ -11,14 +11,21 @@ import (
 func GetContests() string{
 	ch := make(chan contestsData)
 
-	number_pages_supported := 4
-
+	number_pages_supported := 16
 
 	go getContestsFromPage(
 		"activa sapo",
 		"http://activa.sapo.pt/passatempos/",
 		"div.textDetails > h1.title > a",
 		getDataFromContestsElemRelativeURL,
+		ch,
+	)
+
+	go getContestsFromPage(
+		"antena3",
+		"http://media.rtp.pt/antena3/passatempos/",
+		"h3.entry-title > a",
+		getDataFromContestsElemAbsoluteURL,
 		ch,
 	)
 
@@ -31,22 +38,104 @@ func GetContests() string{
 	)
 
 	go getContestsFromPage(
-		"antena3",
-		"http://media.rtp.pt/antena3/passatempos/",
-		"h3.entry-title > a",
+		"axn",
+		"http://www.axn.pt/contests",
+		"div.promo-teaser.snippet.contest > h2 > a",
+		getDataFromContestsElemRelativeURL,
+		ch,
+	)
+
+
+	go getContestsFromPage(
+		"c7nema",
+		"http://www.c7nema.net/passatempos2014.html",
+		"ul#b2j_k2_news_slider_ul_661 > li > a",
+		getDataFromContestsElemRelativeURL,
+		ch,
+	)
+
+
+	go getContestsFromPage(
+		"caixaiu",
+		"http://www.caixaiu.pt/actualidade/passatempos/",
+		"h1.post-title > a",
 		getDataFromContestsElemAbsoluteURL,
 		ch,
 	)
 
-	/*
 	go getContestsFromPage(
-		"axn",
-		"http://www.axn.pt/contests",
-		"div.promo-teaser.snippet.contest > h2 > a",
-		getContestsAXN,
+		"cinemacity",
+		"http://www.cinemacity.pt/editoriais/passatempos/",
+		"h3.title > a",
+		getDataFromContestsElemAbsoluteURL,
 		ch,
 	)
-	*/
+
+	go getContestsFromPage(
+		"cinemametropolis",
+		"http://cinemametropolis.com/index.php/pt/passatempos",
+		"div.itemBlock > header > h2 > a",
+		getDataFromContestsElemRelativeURL,
+		ch,
+	)
+
+	go getContestsFromPage(
+		"cinemas_nos",
+		"http://cinemas.nos.pt/passatempos/",
+		"div#WebPartWPQ3 > table > tbody > tr > td:first-child > a",
+		getDataFromContestsElemAbsoluteURL,
+		ch,
+	)
+
+
+	go getContestsFromPage(
+		"cinemundo",
+		"http://www.cinemundo.pt/passatempos/",
+		"div.col-md-6.text-normal.element-top-0.element-bottom-20.text-center a",
+		getDataFromContestsElemAbsoluteURL,
+		ch,
+	)
+
+	go getContestsFromPage(
+		"closeupblog",
+		"http://close-up-blog.blogspot.pt/p/passatempos-decorrer.html",
+		"div.post.hentry b a",
+		getDataFromContestsElemAbsoluteURL,
+		ch,
+	)
+
+	go getContestsFromPage(
+		"hollywood",
+		"http://canalhollywood.pt/passatempos/",
+		"div.entrada-blog > div:first-child",
+		getContestsHollywood,
+		ch,
+	)
+
+	go getContestsFromPage(
+		"maxima",
+		"http://www.maxima.pt/passatempos",
+		"div.mainAlign > h1 > a",
+		getDataFromContestsElemRelativeURL,
+		ch,
+	)
+
+	go getContestsFromPage(
+		"mtv",
+		"http://mtv.pt/passatempos",
+		"div.tilesContainer.case-4.params-active > a",
+		getContestsMTV,
+		ch,
+	)
+
+
+	go getContestsFromPage(
+		"noite_musica_magazine",
+		"http://www.noitemusicamagazine.pt/category/passatempos",
+		"div.postarea > h1 > a",
+		getDataFromContestsElemAbsoluteURL,
+		ch,
+	)
 
 	go getContestsFromPage(
 		"transporteslisboa",
@@ -55,6 +144,7 @@ func GetContests() string{
 		getDataFromContestsElemAbsoluteURL,
 		ch,
 	)
+
 
 	var contests_list []contestsData
 	for i := 0; i<number_pages_supported; i++  {
@@ -105,7 +195,9 @@ func getDataFromContestsElemRelativeURL(contests_elem *goquery.Selection, contes
 func getDataFromContestsElemBase(contests_elem *goquery.Selection, contests pageContestsData, page_url string, relative_url bool) pageContestsData {
 	contests_elem.Each(func(i int, s *goquery.Selection) {
 		contest_map := make(map[string]string)
+
 		contest_map["name"] = s.Text()
+
 		contest_url, _ := s.Attr("href")
 		if relative_url {
 			contest_map["url"] = getURLroot(page_url) + contest_url
@@ -128,18 +220,26 @@ func getContestsArtefactos(contests_elem *goquery.Selection, contests pageContes
 	return contests
 }
 
-/*
-func getContestsAXN(contests_elem *goquery.Selection, contests pageContestsData) pageContestsData {
+func getContestsHollywood(contests_elem *goquery.Selection, contests pageContestsData, page_url string) pageContestsData {
 	contests_elem.Each(func(i int, s *goquery.Selection) {
 		contest_map := make(map[string]string)
-		contest_map["name"] = s.Text()
+		contest_map["name"] = s.Find("h2").Text()
+		contest_url, _ := s.Find("a").Attr("href")
+		contest_map["url"] = getURLroot(page_url) + contest_url
+		contests[i] = contest_map
+	})
+	return contests
+}
+
+func getContestsMTV(contests_elem *goquery.Selection, contests pageContestsData, _ string) pageContestsData {
+	contests_elem.Each(func(i int, s *goquery.Selection) {
+		contest_map := make(map[string]string)
+		contest_map["name"] = s.Find("div.text > h4").Text()
 		contest_map["url"], _ = s.Attr("href")
 		contests[i] = contest_map
 	})
 	return contests
 }
-*/
-
 
 func convertToJson(to_convert contestsData) string {
 	bytes, err := json.Marshal(to_convert)
