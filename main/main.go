@@ -14,5 +14,5 @@ func contestsHandler(w http.ResponseWriter, _ *http.Request) {
 
 func main() {
     http.HandleFunc("/passatempos", contestsHandler)
-    http.ListenAndServe(":5001", nil)
+    http.ListenAndServe(":5000", nil)
 }
