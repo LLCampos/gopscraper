@@ -79,7 +79,7 @@ func GetContests() string{
 	)
 
 	go getContestsFromPage(
-		"cinemas_nos",
+		"cinemasnos",
 		"http://cinemas.nos.pt/passatempos/",
 		"div#WebPartWPQ3 > table > tbody > tr > td:first-child > a",
 		getDataFromContestsElemAbsoluteURL,
@@ -199,7 +199,7 @@ func GetContests() string{
 		"take",
 		"http://take.com.pt/passatempos/",
 		"h3.g1-beta.g1-beta-1st.entry-title > a",
-		getDataFromContestsElemAbsoluteURL,
+		getContestsTake,
 		ch,
 	)
 
@@ -341,6 +341,10 @@ func getContestsRTPCinemax(contests_elem *goquery.Selection, contests pageContes
 		contests[i] = contest_map
 	})
 	return contests
+}
+
+func getContestsTake(contests_elem *goquery.Selection, contests pageContestsData, page_url string) pageContestsData {
+	return getContestsRTPCinemax(contests_elem, contests, page_url)
 }
 
 func getContestsSapoMag(contests_elem *goquery.Selection, contests pageContestsData, _ string) pageContestsData {
