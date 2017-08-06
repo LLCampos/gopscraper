@@ -96,6 +96,14 @@ func GetContests() string{
 	)
 
 	go getContestsFromPage(
+		"docesousalgadas",
+		"http://docesousalgadas.pt/category/passatempos/",
+		"h2.entry-title > a",
+		getDataFromContestsElemAbsoluteURL,
+		ch,
+	)
+
+	go getContestsFromPage(
 		"closeupblog",
 		"http://close-up-blog.blogspot.pt/p/passatempos-decorrer.html",
 		"div.post.hentry b a",
