@@ -215,7 +215,9 @@ func GetContests() string{
 	var contests_list []contestsData
 	for i := 0; i<number_pages_supported; i++  {
 		page_contests := <- ch
-		contests_list = append(contests_list, page_contests)
+		if page_contests != nil {
+			contests_list = append(contests_list, page_contests)
+		}
 	}
 
 	all_contests := mergeMaps(contests_list)
@@ -238,6 +240,11 @@ func getContestsFromPage(page_name string, page_url string, contests_element_pat
 	log.Println("Scraping ", page_url)
 	contests_elem := doc.Find(contests_element_path)
 	number_contests := contests_elem.Length()
+	if number_contests == 0 {
+		log.Printf("No contests for %v", page_name)
+		ch <- nil
+		return
+	}
 
 	contests := make(pageContestsData, number_contests)
 
