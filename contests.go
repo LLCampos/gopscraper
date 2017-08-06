@@ -13,7 +13,7 @@ func GetContests() string{
 	number_pages_supported := 24
 
 	go getContestsFromPage(
-		"activa sapo",
+		"activasapo",
 		"http://activa.sapo.pt/passatempos/",
 		"div.textDetails > h1.title > a",
 		getDataFromContestsElemRelativeURL,
@@ -129,7 +129,7 @@ func GetContests() string{
 
 
 	go getContestsFromPage(
-		"noite_musica_magazine",
+		"noitemusica",
 		"http://www.noitemusicamagazine.pt/category/passatempos",
 		"div.postarea > h1 > a",
 		getDataFromContestsElemAbsoluteURL,
@@ -146,7 +146,7 @@ func GetContests() string{
 	)
 
 	go getContestsFromPage(
-		"ritmos_e_blues",
+		"ritmosblues",
 		"http://www.ritmoseblues.pt/passatempos/",
 		"div.center-wraper > table",
 		getContestsRitmosEBlues,
@@ -180,7 +180,7 @@ func GetContests() string{
 
 
 	go getContestsFromPage(
-		"splitescreen",
+		"splitscreen",
 		"http://splitscreen-blog.blogspot.pt/p/passatempos.html",
 		"div.post-body.entry-content > div:nth-child(2) > div:nth-child(2) > div > a",
 		getContestsSplitScreen,
@@ -204,7 +204,7 @@ func GetContests() string{
 	)
 
 	go getContestsFromPage(
-		"universal music",
+		"universalmusic",
 		"http://www.universalmusic.pt/passatempo",
 		"div.row.passatempos > div.col-md-4.col-sm-4",
 		getContestsUniversalMusic,
