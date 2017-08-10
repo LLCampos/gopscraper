@@ -240,7 +240,9 @@ func getContestsFromPage(page_name string, page_url string, contests_element_pat
 	log.Println("Downloading", page_url)
 	doc, err := goquery.NewDocument(page_url)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Skipping %v: %v", page_name, err)
+		ch <- nil
+		return
 	} else {
 		log.Println("Website successfully obtained:", page_url)
 	}
